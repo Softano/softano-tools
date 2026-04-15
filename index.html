@@ -130,6 +130,10 @@ body.embed-mode{background:transparent !important;}
 body.embed-mode .lang-bar{display:none !important;}
 body.embed-mode .footer{display:none !important;}
 body.embed-mode .main{margin-bottom:10px !important;}
+body.embed-mode .embed-lang{display:flex !important;justify-content:center;gap:6px;margin-top:12px;}
+body.embed-mode .embed-lang button{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);font-size:12px;padding:4px 14px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s;}
+body.embed-mode .embed-lang button.active,body.embed-mode .embed-lang button:hover{background:rgba(255,255,255,0.35);color:#fff;border-color:rgba(255,255,255,0.6);}
+.embed-lang{display:none;}
 
 .server-list{margin-bottom:14px;}
 .server-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;}
@@ -159,6 +163,11 @@ body.embed-mode .main{margin-bottom:10px !important;}
     </div>
     <h1 data-i18n="title"></h1>
     <p data-i18n="subtitle"></p>
+    <div class="embed-lang" id="embedLangBtns">
+      <button onclick="setEmbedLang('en')" id="eLangEn">EN</button>
+      <button onclick="setEmbedLang('de')" id="eLangDe">DE</button>
+      <button onclick="setEmbedLang('el')" id="eLangEl">EL</button>
+    </div>
   </div>
 </div>
 
@@ -980,14 +989,26 @@ const urlLang=urlParams.get("lang");
 // Embed mode: hide footer, lang bar, transparent bg
 if(isEmbed){
   document.body.classList.add("embed-mode");
-  // Auto-detect language from parent URL via referrer
-  var ref=document.referrer||"";
-  if(!urlLang){
-    if(ref.indexOf("/de/")>-1)setLang("de");
-    else if(ref.indexOf("/el/")>-1)setLang("el");
-    else setLang("en");
-  }else if(T[urlLang])setLang(urlLang);
-  else setLang("en");
+  // Auto-detect language: try multiple methods
+  var detectedLang="";
+  // Method 1: explicit lang parameter
+  if(urlLang&&T[urlLang])detectedLang=urlLang;
+  // Method 2: document.referrer
+  if(!detectedLang){
+    var ref=document.referrer||"";
+    if(ref.indexOf("/de/")>-1)detectedLang="de";
+    else if(ref.indexOf("/el/")>-1)detectedLang="el";
+  }
+  // Method 3: try parent URL (may be blocked by CORS)
+  if(!detectedLang){
+    try{var pUrl=window.top.location.pathname||"";
+      if(pUrl.indexOf("/de/")>-1)detectedLang="de";
+      else if(pUrl.indexOf("/el/")>-1)detectedLang="el";
+    }catch(e){}
+  }
+  // Set detected language or default to English
+  setLang(detectedLang||"en");
+  updateEmbedLangBtns(detectedLang||"en");
   // Auto-resize iframe: send height to parent
   function sendHeight(){try{window.parent.postMessage({type:"softano-height",height:document.body.scrollHeight+20},"*");}catch(e){}}
   sendHeight();
@@ -996,7 +1017,13 @@ if(isEmbed){
 }else{
   if(urlLang&&T[urlLang])setLang(urlLang);else setLang("en");
 }
+
+function setEmbedLang(lang){setLang(lang);updateEmbedLangBtns(lang);}
+function updateEmbedLangBtns(lang){
+  document.querySelectorAll(".embed-lang button").forEach(function(b){b.classList.remove("active");});
+  var btn=document.getElementById("eLang"+lang.charAt(0).toUpperCase()+lang.slice(1));
+  if(btn)btn.classList.add("active");
+}
 </script>
 </body>
 </html>
-
