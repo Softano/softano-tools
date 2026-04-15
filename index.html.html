@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Softano.eu - Server License Configurator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #13b8a7;
+  --teal-light: #15c9b8;
+  --teal-bg: #e6f7f5;
+  --navy: #1e293b;
+  --navy-light: #334155;
+  --white: #ffffff;
+  --gray-50: #f8fafc;
+  --gray-100: #f0f0f0;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --red: #dc2626;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --amber-border: #fde68a;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Roboto',system-ui,sans-serif;background:var(--gray-100);color:var(--navy);line-height:1.6;min-height:100vh;}
+
+.lang-bar{background:var(--navy);padding:8px 0;text-align:center;}
+.lang-bar button{background:none;border:none;color:var(--gray-400);font-size:13px;cursor:pointer;padding:4px 12px;border-radius:6px;transition:all .2s;font-family:inherit;}
+.lang-bar button.active,.lang-bar button:hover{color:var(--white);background:rgba(255,255,255,.12);}
+
+.header{background:linear-gradient(135deg, #0a7a70 0%, #13b8a7 100%);padding:28px 0 32px;text-align:center;color:var(--white);}
+.header-inner{max-width:720px;margin:0 auto;padding:0 20px;}
+.ms-partner{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 14px;font-size:12px;margin-bottom:16px;}
+.ms-partner svg{flex-shrink:0;}
+.header h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px;}
+.header p{font-size:14px;opacity:1;max-width:560px;margin:0 auto;line-height:1.55;color:rgba(255,255,255,0.88);}
+
+.main{max-width:720px;margin:-20px auto 40px;padding:0 20px;}
+
+.steps{display:flex;gap:4px;margin-bottom:24px;background:var(--white);border:1px solid #e5e7eb;border-radius:var(--radius);padding:6px;box-shadow:var(--shadow);}
+.step-dot{flex:1;text-align:center;padding:10px 6px;font-size:11px;font-weight:700;border-radius:8px;color:var(--gray-400);transition:all .3s;}
+.step-dot.active{background:var(--teal);color:var(--white);}
+.step-dot.done{background:var(--teal-bg);color:var(--teal);}
+
+.card{background:var(--white);border:1px solid #e5e7eb;border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;margin-bottom:16px;}
+.card-title{font-size:18px;font-weight:700;margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--gray-500);margin-bottom:20px;}
+
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--navy-light);margin-bottom:6px;}
+.field label .req{color:var(--red);}
+.field input,.field select,.field textarea{width:100%;padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:14px;font-family:inherit;color:var(--navy);background:var(--white);transition:border-color .2s;outline:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal);}
+.field textarea{min-height:80px;resize:vertical;}
+.field .hint{font-size:11.5px;color:var(--gray-500);margin-top:4px;line-height:1.45;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:540px){.row2,.row3{grid-template-columns:1fr;}}
+
+.toggle-group{display:flex;gap:8px;flex-wrap:wrap;}
+.toggle-card{flex:1;min-width:120px;border:1.5px solid var(--gray-200);border-radius:10px;padding:12px 14px;text-align:center;cursor:pointer;transition:all .2s;font-size:14px;font-weight:600;color:var(--gray-600);user-select:none;}
+.toggle-card:hover{border-color:var(--teal-light);}
+.toggle-card.selected{border-color:var(--teal);background:var(--teal-bg);color:var(--teal);}
+.toggle-card .tc-sub{font-size:11px;font-weight:400;color:var(--gray-500);margin-top:2px;line-height:1.35;}
+.toggle-card.selected .tc-sub{color:var(--teal);}
+
+.yn-group{display:flex;gap:8px;}
+.yn-btn{padding:10px 24px;border-radius:10px;border:1.5px solid var(--gray-200);background:var(--white);cursor:pointer;font-size:14px;font-weight:600;color:var(--gray-500);transition:all .2s;font-family:inherit;}
+.yn-btn:hover{border-color:var(--teal-light);}
+.yn-btn.selected{border-color:var(--teal);background:var(--teal-bg);color:var(--teal);}
+
+.cond{display:none;margin-top:14px;}
+.cond.show{display:block;}
+
+.info-box{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--navy-light);margin-bottom:18px;display:flex;gap:10px;align-items:flex-start;line-height:1.5;}
+.info-box svg{flex-shrink:0;margin-top:1px;}
+
+.edition-info{background:var(--teal-bg);border:1px solid #b2dfdb;border-radius:10px;padding:14px 16px;font-size:13px;color:var(--navy-light);margin-top:12px;line-height:1.55;display:none;}
+.edition-info.show{display:block;}
+.edition-info strong{color:var(--teal);}
+
+.biz-notice{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--gray-500);margin-bottom:20px;line-height:1.5;}
+.biz-notice svg{vertical-align:middle;margin-right:6px;}
+
+.btn-row{display:flex;gap:10px;justify-content:space-between;margin-top:24px;}
+.btn{padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit;}
+.btn-back{background:var(--gray-100);color:var(--gray-600);border:1.5px solid var(--gray-200);}
+.btn-back:hover{background:var(--gray-200);}
+.btn-next{background:var(--teal);color:var(--white);margin-left:auto;}
+.btn-next:hover{background:var(--teal-light);}
+.btn-next:disabled{opacity:.5;cursor:not-allowed;}
+.btn-submit{background:var(--teal);color:var(--white);width:100%;padding:14px;font-size:16px;}
+.btn-submit:hover{background:var(--teal-light);}
+
+.summary-table{width:100%;border-collapse:collapse;font-size:13px;}
+.summary-table td{padding:8px 0;border-bottom:1px solid var(--gray-100);vertical-align:top;}
+.summary-table td:first-child{color:var(--gray-500);width:45%;padding-right:12px;}
+.summary-table td:last-child{font-weight:600;}
+.summary-divider td{border-bottom:2px solid var(--gray-200);padding:4px 0;}
+
+.success-card{text-align:center;padding:40px 28px;}
+.success-icon{width:64px;height:64px;background:var(--teal-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.success-card h2{font-size:22px;margin-bottom:8px;}
+.success-card p{color:var(--gray-500);font-size:14px;}
+.req-id{display:inline-block;background:var(--gray-100);border-radius:8px;padding:8px 16px;margin-top:12px;font-family:monospace;font-size:15px;font-weight:700;color:var(--teal);letter-spacing:.03em;}
+
+.footer{background:var(--navy);color:var(--gray-400);padding:30px 20px;font-size:12px;}
+.footer a{color:var(--teal-light);text-decoration:none;}
+.footer-inner{max-width:720px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.footer-col{flex:1;min-width:180px;}
+.footer-col h4{color:var(--white);font-size:12px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+.footer-col p{line-height:1.6;margin:0;}
+.footer-bottom{max-width:720px;margin:16px auto 0;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);text-align:center;}
+
+.page{display:none;}
+.page.active{display:block;}
+
+.spinner{display:inline-block;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Embed mode styles */
+body.embed-mode{background:transparent !important;}
+body.embed-mode .lang-bar{display:none !important;}
+body.embed-mode .footer{display:none !important;}
+body.embed-mode .main{margin-bottom:10px !important;}
+
+.server-list{margin-bottom:14px;}
+.server-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;}
+.server-row .srv-label{font-size:13px;font-weight:600;color:var(--teal);min-width:70px;}
+.server-row input{padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;font-family:inherit;outline:none;background:var(--white);width:120px;text-align:center;}
+.server-row input:focus{border-color:var(--teal);}
+.server-row .srv-del{background:none;border:none;color:var(--gray-400);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .2s;}
+.server-row .srv-del:hover{color:var(--red);background:var(--gray-100);}
+.server-row .srv-unit{font-size:12px;color:var(--gray-500);}
+.btn-add-server{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:1.5px dashed var(--gray-300);background:var(--white);color:var(--gray-500);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-add-server:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <button onclick="setLang('en')" id="langEn" class="active">English</button>
+  <button onclick="setLang('de')" id="langDe">Deutsch</button>
+  <button onclick="setLang('el')" id="langEl">Ελληνικά</button>
+</div>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="ms-partner">
+      <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="6.5" height="6.5" fill="#F25022"/><rect x="8.5" y="1" width="6.5" height="6.5" fill="#7FBA00"/><rect x="1" y="8.5" width="6.5" height="6.5" fill="#00A4EF"/><rect x="8.5" y="8.5" width="6.5" height="6.5" fill="#FFB900"/></svg>
+      <span data-i18n="partner"></span>
+    </div>
+    <h1 data-i18n="title"></h1>
+    <p data-i18n="subtitle"></p>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="steps">
+    <div class="step-dot active" id="sd1" data-i18n="step1"></div>
+    <div class="step-dot" id="sd2" data-i18n="step2"></div>
+    <div class="step-dot" id="sd3" data-i18n="step3"></div>
+    <div class="step-dot" id="sd4" data-i18n="step4"></div>
+    <div class="step-dot" id="sd5" data-i18n="step5"></div>
+  </div>
+
+  <!-- PAGE 1: Server -->
+  <div class="page active" id="page1">
+    <div class="card">
+      <div class="card-title" data-i18n="p1_title"></div>
+      <div class="card-sub" data-i18n="p1_sub"></div>
+
+      <div class="field">
+        <label data-i18n="p1_servers_label"></label>
+        <div class="hint" style="margin-bottom:8px;" data-i18n="p1_servers_sub"></div>
+        <div class="server-list" id="serverList"></div>
+        <button type="button" class="btn-add-server" onclick="addServerRow()" data-i18n="p1_add_server"></button>
+        <div class="hint" style="margin-top:10px;" data-i18n="p1_cores_hint"></div>
+        <div class="hint" style="margin-top:4px;" data-i18n="p1_cores_ranges"></div>
+      </div>
+
+      <div class="field">
+        <label data-i18n="p1_version"></label>
+        <div class="toggle-group">
+          <div class="toggle-card" data-field="f_version" data-val="2025">2025<div class="tc-sub" data-i18n="latest"></div></div>
+          <div class="toggle-card" data-field="f_version" data-val="2022">2022</div>
+          <div class="toggle-card" data-field="f_version" data-val="2019">2019</div>
+          <div class="toggle-card" data-field="f_version" data-val="Unsicher" data-i18n="not_sure"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label data-i18n="p1_edition"></label>
+        <div class="toggle-group" id="editionGroup">
+          <div class="toggle-card" data-field="f_edition" data-val="Essentials">Essentials<div class="tc-sub" data-i18n="p1_ess_sub"></div></div>
+          <div class="toggle-card" data-field="f_edition" data-val="Standard">Standard<div class="tc-sub" data-i18n="p1_std_sub"></div></div>
+          <div class="toggle-card" data-field="f_edition" data-val="Datacenter">Datacenter<div class="tc-sub" data-i18n="p1_dc_sub"></div></div>
+          <div class="toggle-card" data-field="f_edition" data-val="Unsicher" data-i18n="not_sure_edition"></div>
+        </div>
+      </div>
+
+      <div class="edition-info" id="edInfo_Essentials"><span data-i18n="ed_ess_info"></span></div>
+      <div class="edition-info" id="edInfo_Standard"><span data-i18n="ed_std_info"></span></div>
+      <div class="edition-info" id="edInfo_Datacenter"><span data-i18n="ed_dc_info"></span></div>
+      <div class="edition-info" id="edInfo_Unsicher"><span data-i18n="ed_unsure_info"></span></div>
+
+      <div class="info-box" style="margin-top:18px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span data-i18n="p1_info"></span>
+      </div>
+
+      <div class="btn-row">
+        <div></div>
+        <button class="btn btn-next" onclick="goTo(2)" data-i18n="next"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: Access / CALs -->
+  <div class="page" id="page2">
+    <div class="card">
+      <div class="card-title" data-i18n="p2_title"></div>
+      <div class="card-sub" data-i18n="p2_sub"></div>
+
+      <div id="calNotice" class="info-box" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#13b8a7" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span data-i18n="p2_ess_notice"></span>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label data-i18n="p2_users"></label>
+          <input type="number" id="f_users" min="0" placeholder="e.g. 10"/>
+          <div class="hint" data-i18n="p2_users_hint"></div>
+        </div>
+        <div class="field">
+          <label data-i18n="p2_devices"></label>
+          <input type="number" id="f_devices" min="0" placeholder="e.g. 5"/>
+          <div class="hint" data-i18n="p2_devices_hint"></div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span data-i18n="p2_cal_explain"></span>
+      </div>
+
+      <div class="field">
+        <label data-i18n="p2_rdp"></label>
+        <div class="yn-group">
+          <div class="yn-btn" data-field="f_rdp" data-val="Ja" data-i18n="yes"></div>
+          <div class="yn-btn" data-field="f_rdp" data-val="Nein" data-i18n="no"></div>
+          <div class="yn-btn" data-field="f_rdp" data-val="Unsicher" data-i18n="not_sure"></div>
+        </div>
+        <div class="hint" data-i18n="p2_rdp_hint"></div>
+      </div>
+
+      <div class="cond" id="rdpSection">
+        <div class="field">
+          <label data-i18n="p2_rds_users"></label>
+          <input type="number" id="f_rdsUsers" min="1" placeholder="e.g. 5"/>
+          <div class="hint" data-i18n="p2_rds_hint"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goTo(1)" data-i18n="back"></button>
+        <button class="btn btn-next" onclick="goTo(3)" data-i18n="next"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: SQL -->
+  <div class="page" id="page3">
+    <div class="card">
+      <div class="card-title" data-i18n="p3_title"></div>
+      <div class="card-sub" data-i18n="p3_sub"></div>
+
+      <div class="field">
+        <label data-i18n="p3_need_sql"></label>
+        <div class="yn-group">
+          <div class="yn-btn" data-field="f_sql" data-val="Ja" data-i18n="yes"></div>
+          <div class="yn-btn" data-field="f_sql" data-val="Nein" data-i18n="no"></div>
+          <div class="yn-btn" data-field="f_sql" data-val="Unsicher" data-i18n="not_sure"></div>
+        </div>
+        <div class="hint" data-i18n="p3_sql_hint"></div>
+      </div>
+
+      <div class="cond" id="sqlSection">
+        <div class="field">
+          <label data-i18n="p3_sql_edition"></label>
+          <div class="toggle-group">
+            <div class="toggle-card" data-field="f_sqlEdition" data-val="Standard">Standard<div class="tc-sub" data-i18n="p3_sql_std_sub"></div></div>
+            <div class="toggle-card" data-field="f_sqlEdition" data-val="Enterprise">Enterprise<div class="tc-sub" data-i18n="p3_sql_ent_sub"></div></div>
+            <div class="toggle-card" data-field="f_sqlEdition" data-val="Unsicher" data-i18n="not_sure"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label data-i18n="p3_sql_version"></label>
+          <div class="toggle-group">
+            <div class="toggle-card" data-field="f_sqlVersion" data-val="2025">2025<div class="tc-sub" data-i18n="latest"></div></div>
+            <div class="toggle-card" data-field="f_sqlVersion" data-val="2022">2022</div>
+            <div class="toggle-card" data-field="f_sqlVersion" data-val="2019">2019</div>
+          </div>
+        </div>
+        <div class="field">
+          <label data-i18n="p3_sql_cores"></label>
+          <input type="number" id="f_sqlCores" min="4" placeholder="e.g. 16"/>
+          <div class="hint" data-i18n="p3_sql_cores_hint"></div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label data-i18n="p3_sql_users"></label>
+            <input type="number" id="f_sqlUsers" min="0" placeholder="e.g. 10"/>
+            <div class="hint" data-i18n="p3_sql_users_hint"></div>
+          </div>
+          <div class="field">
+            <label data-i18n="p3_sql_devices"></label>
+            <input type="number" id="f_sqlDevices" min="0" placeholder="e.g. 5"/>
+            <div class="hint" data-i18n="p3_sql_devices_hint"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goTo(2)" data-i18n="back"></button>
+        <button class="btn btn-next" onclick="goTo(4)" data-i18n="next"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: Contact -->
+  <div class="page" id="page4">
+    <div class="card">
+      <div class="card-title" data-i18n="p4_title"></div>
+      <div class="card-sub" data-i18n="p4_sub"></div>
+
+      <div class="biz-notice">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+        <span data-i18n="p4_biz_notice"></span>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label data-i18n="p4_fname"></label>
+          <input type="text" id="f_fname"/>
+        </div>
+        <div class="field">
+          <label data-i18n="p4_lname"></label>
+          <input type="text" id="f_lname"/>
+        </div>
+      </div>
+      <div class="field">
+        <label data-i18n="p4_company"></label>
+        <input type="text" id="f_company"/>
+      </div>
+      <div class="field">
+        <label data-i18n="p4_address"></label>
+        <input type="text" id="f_address" placeholder=""/>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <label data-i18n="p4_postal"></label>
+          <input type="text" id="f_postal"/>
+        </div>
+        <div class="field">
+          <label data-i18n="p4_city"></label>
+          <input type="text" id="f_city"/>
+        </div>
+        <div class="field">
+          <label data-i18n="p4_country"></label>
+          <input type="text" id="f_country"/>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label data-i18n="p4_email"></label>
+          <input type="email" id="f_email"/>
+        </div>
+        <div class="field">
+          <label data-i18n="p4_phone"></label>
+          <input type="tel" id="f_phone"/>
+        </div>
+      </div>
+      <div class="field">
+        <label data-i18n="p4_vat"></label>
+        <input type="text" id="f_vat" placeholder="e.g. DE123456789"/>
+        <div class="hint" data-i18n="p4_vat_hint"></div>
+      </div>
+      <div class="info-box" style="background:var(--teal-bg);border-color:#b2dfdb;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#13b8a7" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span data-i18n="p4_offer_lang_note"></span>
+      </div>
+      <div class="field">
+        <label data-i18n="p4_message"></label>
+        <textarea id="f_message"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goTo(3)" data-i18n="back"></button>
+        <button class="btn btn-next" onclick="goTo(5)" data-i18n="to_summary"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: Summary -->
+  <div class="page" id="page5">
+    <div class="card">
+      <div class="card-title" data-i18n="p5_title"></div>
+      <div class="card-sub" data-i18n="p5_sub"></div>
+      <table class="summary-table" id="summaryTable"></table>
+      <div id="submitError" style="color:var(--red);font-size:13px;margin-top:12px;display:none;"></div>
+      <div class="btn-row" style="flex-direction:column;gap:10px;">
+        <button class="btn btn-submit" id="btnSubmit" onclick="submitForm()" data-i18n="submit"></button>
+        <button class="btn btn-back" onclick="goTo(4)" style="width:100%;text-align:center;" data-i18n="back_edit"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: Success -->
+  <div class="page" id="page6">
+    <div class="card success-card">
+      <div class="success-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 data-i18n="p6_title"></h2>
+      <p data-i18n="p6_sub"></p>
+      <div class="req-id" id="showReqId"></div>
+      <p style="margin-top:16px;font-size:13px;color:var(--gray-400);" data-i18n="p6_ref"></p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h4>Softano Software Limited</h4>
+      <p>7 Stasandrou Street<br>1060 Nicosia<br>Cyprus</p>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_contact">Contact</h4>
+      <p>Phone: +357 22 000 699<br>Email: <a href="mailto:support@softano.eu">support@softano.eu</a><br>Web: <a href="https://softano.eu">softano.eu</a></p>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_legal">Legal</h4>
+      <p>VAT ID: CY60173999Q<br>Reg: HE475137<br>Microsoft Partner ID: 7009919</p>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Softano Software Limited · <a href="https://softano.eu">softano.eu</a></div>
+</div>
+
+<script>
+const T={
+en:{
+  partner:"Official Microsoft Partner",
+  title:"Softano.eu - Server License Configurator",
+  subtitle:"Tell us your server requirements and we'll prepare a custom licensing offer for you — free of charge.",
+  step1:"1. Server",step2:"2. Access",step3:"3. SQL",step4:"4. Contact",step5:"5. Summary",
+  p1_title:"Server Infrastructure",
+  p1_sub:"Tell us about your current or planned physical server environment.",
+  p1_servers_label:'Your Physical Servers <span class="req">*</span>',
+  p1_servers_sub:"Add each physical server and enter its total CPU core count.",
+  p1_add_server:"+ Add another server",
+  p1_server_label:"Server",
+  p1_cores_placeholder:"Cores",
+  p1_cores_hint:"Enter the total physical CPU cores per server. <strong>Microsoft licensing:</strong> Minimum 16 cores licensed per server (8 per CPU), in 2-core packs.",
+  select_ph:"— Please select —",
+  p1_cores_ranges:"Typical ranges: Small servers 4–16 cores · Mid-range 16–64 cores · Enterprise 64–256 cores · High-end/Datacenter 128–512+ cores (multi-CPU).",
+  other:"Other",
+  p1_version:'Windows Server Version <span class="req">*</span>',
+  latest:"Latest",
+  p1_edition:'Server Edition <span class="req">*</span>',
+  p1_ess_sub:"Small business, no CALs needed",
+  p1_std_sub:"Physical + light virtualization",
+  p1_dc_sub:"Heavy virtualization",
+  not_sure:"Not sure",
+  not_sure_edition:"Not sure",
+  ed_ess_info:"<strong>Essentials</strong> is designed for small businesses with <strong>max. 10 cores, up to 25 users and 50 devices</strong>. CALs are already included — no additional access licenses needed. <strong>Note:</strong> Essentials does not use core-based licensing like Standard/Datacenter. It is a single server license with built-in limits.",
+  ed_std_info:"<strong>Standard</strong> is licensed per core (minimum 16 cores per server, 8 per CPU, sold in 2-core packs). Includes rights for <strong>up to 2 virtual machines (VMs)</strong>. For additional VMs, licenses must be stacked (each stack covers 2 more VMs). <strong>Important:</strong> CALs (User or Device) are required separately for every user or device that accesses the server.",
+  ed_dc_info:"<strong>Datacenter</strong> is licensed per core (minimum 16 cores per server, 8 per CPU, sold in 2-core packs). Allows <strong>unlimited virtual machines (VMs)</strong> once all physical cores are licensed. <strong>Important:</strong> CALs (User or Device) are required separately for every user or device that accesses the server. Best for highly virtualized environments.",
+  ed_unsure_info:"No worries — based on your server specs, number of users and virtualization needs, we'll recommend the right edition in your offer.",
+  p1_info:"Not sure about your setup? Fill in what you know — we'll review everything and recommend the best licensing solution for your needs.",
+  next:"Next →",
+  back:"← Back",
+  p2_title:"User & Device Access",
+  p2_sub:"Tell us how many users and devices need to access your server(s). This helps us determine the right access licenses (CALs).",
+  p2_ess_notice:"You selected Essentials — CALs are already included (up to 25 users / 50 devices). You can still provide the numbers below so we can verify Essentials is the right fit.",
+  p2_users:'How many employees/users access the server? <span class="req">*</span>',
+  p2_users_hint:"Count every person who logs in to the server with their own credentials — regardless of how many devices they use.",
+  p2_devices:'How many shared devices access the server? <span class="req">*</span>',
+  p2_devices_hint:"Shared PCs, workstations, POS terminals, kiosks — devices used by multiple people with different logins.",
+  p2_cal_explain:"We need both numbers to recommend whether User CALs or Device CALs are more cost-effective for you. For example: 20 employees sharing 5 workstations → Device CALs may be cheaper. 3 employees each with 4 devices → User CALs may be cheaper.",
+  p2_rdp:"Do users need Remote Desktop access (RDS)?",
+  p2_rdp_hint:"Remote Desktop Services allow users to connect to the server from outside the office or from thin clients.",
+  yes:"Yes",no:"No",not_sure:"Not sure",
+  p2_rds_users:'How many users need Remote Desktop access?',
+  p2_rds_hint:"Each remote user needs an additional RDS CAL on top of their regular User/Device CAL.",
+  p3_title:"SQL Server Database",
+  p3_sub:"Does your business use or plan to use a Microsoft SQL Server database?",
+  p3_need_sql:"Do you need SQL Server?",
+  p3_sql_hint:"SQL Server is used for ERP (SAP, Dynamics), CRM, data warehouses, or custom database applications. <strong>Licensing:</strong> SQL Server Standard can be licensed per core (min. 4 cores per CPU, 2-core packs) or via Server+CAL model. Enterprise is core-only. No CALs needed with core licensing.",
+  p3_sql_edition:"SQL Server Edition",
+  p3_sql_std_sub:"Per Core or Server+CAL licensing",
+  p3_sql_ent_sub:"Core licensing only, unlimited RAM",
+  p3_sql_version:"SQL Server Version",
+  p3_sql_cores:"SQL Server Cores",
+  p3_sql_cores_hint:"Number of physical cores of the server on which SQL Server will run. Minimum 4 cores. This is needed to calculate the optimal licensing option.",
+  p3_sql_users:"SQL Server User CALs",
+  p3_sql_users_hint:"Users who access the SQL database (directly or through an application). Only needed for Server+CAL licensing.",
+  p3_sql_devices:"SQL Server Device CALs",
+  p3_sql_devices_hint:"Devices from which the SQL database is accessed. Only needed for Server+CAL licensing.",
+  p4_title:"Your Business Details",
+  p4_sub:"We'll prepare and send a detailed offer to your email address.",
+  p4_biz_notice:"This configuration and offer service is for businesses and organizations. All fields marked with * are required to create your personalized licensing offer.",
+  p4_fname:'First Name <span class="req">*</span>',
+  p4_lname:'Last Name <span class="req">*</span>',
+  p4_company:'Company / Organization <span class="req">*</span>',
+  p4_address:'Street Address <span class="req">*</span>',
+  p4_postal:'Postal Code <span class="req">*</span>',
+  p4_city:'City <span class="req">*</span>',
+  p4_country:'Country <span class="req">*</span>',
+  p4_email:'Business Email <span class="req">*</span>',
+  p4_phone:'Phone <span class="req">*</span>',
+  p4_vat:'VAT Number <span class="req">*</span>',
+  p4_vat_hint:"Your EU VAT identification number (e.g. DE123456789). <strong>Important:</strong> If your business is located outside Cyprus and you provide a valid EU VAT ID, your offer will be VAT-free (reverse charge). Cyprus-based businesses will receive an offer including 19% VAT.",
+  p4_offer_lang_note:"Your offer will be prepared in <strong>English</strong> based on your language selection above.",
+  p4_message:"Additional notes or questions (optional)",
+  to_summary:"Review Summary →",
+  p5_title:"Review Your Configuration",
+  p5_sub:"Please review all details before submitting your request.",
+  submit:"Submit Request",
+  back_edit:"← Back to edit",
+  p6_title:"Request Submitted!",
+  p6_sub:"Thank you! We'll review your requirements and send you a personalized licensing offer within 24 hours.",
+  p6_ref:"Save this reference ID for your records.",
+  s_servers:"Servers & Cores",s_version:"Server Version",
+  s_edition:"Server Edition",s_users:"Users accessing server",s_devices:"Shared devices accessing server",
+  s_rdp:"Remote Desktop (RDS)",s_rds:"RDS Users",s_sql:"SQL Server",
+  s_sqlEd:"SQL Edition",s_sqlVer:"SQL Version",s_sqlCores:"SQL Server Cores",s_sqlU:"SQL User CALs",
+  s_sqlD:"SQL Device CALs",s_fname:"First Name",s_lname:"Last Name",
+  s_company:"Company",s_address:"Address",s_postal:"Postal Code",s_city:"City",
+  s_country:"Country",s_email:"Email",s_phone:"Phone",s_vat:"VAT Number",s_msg:"Notes",
+  err_required:"Please fill in all required fields.",
+  err_email:"Please enter a valid email address.",
+  err_submit:"Something went wrong. Please try again or contact us at support@softano.eu.",
+  submitting:"Submitting...",
+footer_contact:"Contact",
+footer_legal:"Legal"
+},
+de:{
+  partner:"Offizieller Microsoft Partner",
+  title:"Softano.eu - Server-Lizenz-Konfigurator",
+  subtitle:"Teilen Sie uns Ihre Serveranforderungen mit und wir erstellen Ihnen ein individuelles Lizenzangebot — kostenlos.",
+  step1:"1. Server",step2:"2. Zugriff",step3:"3. SQL",step4:"4. Kontakt",step5:"5. Übersicht",
+  p1_title:"Server-Infrastruktur",
+  p1_sub:"Beschreiben Sie Ihre aktuelle oder geplante physische Serverumgebung.",
+  p1_servers_label:'Ihre physischen Server <span class="req">*</span>',
+  p1_servers_sub:"Fügen Sie jeden physischen Server hinzu und geben Sie die Gesamtzahl der CPU-Kerne ein.",
+  p1_add_server:"+ Weiteren Server hinzufügen",
+  p1_server_label:"Server",
+  p1_cores_placeholder:"Kerne",
+  p1_cores_hint:"Geben Sie die physischen CPU-Kerne pro Server ein. <strong>Microsoft-Lizenzierung:</strong> Mind. 16 Kerne pro Server (8 pro CPU), in 2-Core-Paketen.",
+  select_ph:"— Bitte wählen —",
+  p1_cores_ranges:"Typische Bereiche: Kleine Server 4–16 Kerne · Mittelklasse 16–64 Kerne · Enterprise 64–256 Kerne · High-End/Rechenzentrum 128–512+ Kerne (Multi-CPU).",
+  other:"Andere",
+  p1_version:'Windows Server Version <span class="req">*</span>',
+  latest:"Neueste",
+  p1_edition:'Server Edition <span class="req">*</span>',
+  p1_ess_sub:"Kleinunternehmen, keine CALs nötig",
+  p1_std_sub:"Physisch + leichte Virtualisierung",
+  p1_dc_sub:"Intensive Virtualisierung",
+  not_sure:"Unsicher",
+  not_sure_edition:"Unsicher",
+  ed_ess_info:"<strong>Essentials</strong> ist für kleine Unternehmen mit <strong>max. 10 Cores, bis zu 25 Benutzern und 50 Geräten</strong> konzipiert. CALs sind bereits enthalten — keine zusätzlichen Zugriffslizenzen nötig. <strong>Hinweis:</strong> Essentials verwendet keine Core-basierte Lizenzierung wie Standard/Datacenter, sondern ist eine Einzelserverlizenz mit festen Limits.",
+  ed_std_info:"<strong>Standard</strong> wird pro Core lizenziert (mind. 16 Cores pro Server, 8 pro CPU, in 2-Core-Paketen). Beinhaltet Rechte für <strong>bis zu 2 virtuelle Maschinen (VMs)</strong>. Für weitere VMs müssen Lizenzen gestapelt werden (jede Stapelung deckt 2 weitere VMs ab). <strong>Wichtig:</strong> CALs (Benutzer oder Gerät) sind separat erforderlich für jeden Benutzer oder jedes Gerät, das auf den Server zugreift.",
+  ed_dc_info:"<strong>Datacenter</strong> wird pro Core lizenziert (mind. 16 Cores pro Server, 8 pro CPU, in 2-Core-Paketen). Erlaubt <strong>unbegrenzte virtuelle Maschinen (VMs)</strong> nach vollständiger Lizenzierung aller physischen Kerne. <strong>Wichtig:</strong> CALs (Benutzer oder Gerät) sind separat erforderlich für jeden Benutzer oder jedes Gerät, das auf den Server zugreift. Optimal für stark virtualisierte Umgebungen.",
+  ed_unsure_info:"Kein Problem — basierend auf Ihren Serverspezifikationen, der Benutzeranzahl und Ihren Virtualisierungsanforderungen empfehlen wir Ihnen die richtige Edition in Ihrem Angebot.",
+  p1_info:"Nicht sicher über Ihr Setup? Füllen Sie aus was Sie wissen — wir prüfen alles und empfehlen die beste Lizenzlösung für Ihre Anforderungen.",
+  next:"Weiter →",
+  back:"← Zurück",
+  p2_title:"Benutzer- & Gerätezugriff",
+  p2_sub:"Wie viele Benutzer und Geräte benötigen Zugriff auf Ihre Server? Das hilft uns, die richtigen Zugriffslizenzen (CALs) zu ermitteln.",
+  p2_ess_notice:"Sie haben Essentials gewählt — CALs sind bereits enthalten (bis 25 Benutzer / 50 Geräte). Geben Sie dennoch die Zahlen an, damit wir prüfen können ob Essentials die richtige Wahl ist.",
+  p2_users:'Wie viele Mitarbeiter/Benutzer greifen auf den Server zu? <span class="req">*</span>',
+  p2_users_hint:"Zählen Sie jede Person, die sich mit eigenen Zugangsdaten am Server anmeldet — unabhängig davon wie viele Geräte sie nutzt.",
+  p2_devices:'Wie viele gemeinsam genutzte Geräte greifen auf den Server zu? <span class="req">*</span>',
+  p2_devices_hint:"Gemeinsam genutzte PCs, Workstations, Kassensysteme (POS), Kioske — Geräte, die von mehreren Personen genutzt werden.",
+  p2_cal_explain:"Wir benötigen beide Angaben um zu empfehlen, ob Benutzer-CALs oder Geräte-CALs für Sie günstiger sind. Beispiel: 20 Mitarbeiter teilen sich 5 Arbeitsplätze → Geräte-CALs können günstiger sein. 3 Mitarbeiter mit je 4 Geräten → Benutzer-CALs können günstiger sein.",
+  p2_rdp:"Benötigen Benutzer Remote Desktop-Zugriff (RDS)?",
+  p2_rdp_hint:"Remote Desktop Services ermöglichen Benutzern die Verbindung zum Server von außerhalb des Büros oder von Thin Clients.",
+  yes:"Ja",no:"Nein",not_sure:"Unsicher",
+  p2_rds_users:"Wie viele Benutzer benötigen Remote Desktop-Zugriff?",
+  p2_rds_hint:"Jeder Remote-Benutzer benötigt eine zusätzliche RDS CAL neben seiner regulären Benutzer-/Geräte-CAL.",
+  p3_title:"SQL Server Datenbank",
+  p3_sub:"Nutzt Ihr Unternehmen eine Microsoft SQL Server Datenbank oder planen Sie dies?",
+  p3_need_sql:"Benötigen Sie SQL Server?",
+  p3_sql_hint:"SQL Server wird für ERP (SAP, Dynamics), CRM, Data Warehouses oder individuelle Datenbankanwendungen verwendet. <strong>Lizenzierung:</strong> SQL Server Standard kann pro Core (mind. 4 Cores pro CPU, in 2-Core-Paketen) oder per Server+CAL-Modell lizenziert werden. Enterprise nur pro Core. Bei Core-Lizenzierung keine CALs erforderlich.",
+  p3_sql_edition:"SQL Server Edition",
+  p3_sql_std_sub:"Per Core oder Server+CAL Lizenzierung",
+  p3_sql_ent_sub:"Nur Core-Lizenzierung, unbegrenzt RAM",
+  p3_sql_version:"SQL Server Version",
+  p3_sql_cores:"SQL Server Cores",
+  p3_sql_cores_hint:"Anzahl der physischen Cores des Servers, auf dem SQL Server läuft. Minimum 4 Cores. Wird für die Berechnung der optimalen Lizenzierungsoption benötigt.",
+  p3_sql_users:"SQL Server Benutzer-CALs",
+  p3_sql_users_hint:"Benutzer, die auf die SQL-Datenbank zugreifen (direkt oder über eine Anwendung). Nur für Server+CAL Lizenzierung benötigt.",
+  p3_sql_devices:"SQL Server Geräte-CALs",
+  p3_sql_devices_hint:"Geräte, von denen auf die SQL-Datenbank zugegriffen wird. Nur für Server+CAL Lizenzierung benötigt.",
+  p4_title:"Ihre Unternehmensdaten",
+  p4_sub:"Wir erstellen und senden Ihnen ein detailliertes Angebot an Ihre E-Mail-Adresse.",
+  p4_biz_notice:"Dieser Konfigurations- und Angebotsservice richtet sich an Unternehmen und Organisationen. Alle mit * gekennzeichneten Felder sind Pflichtfelder für die Erstellung Ihres individuellen Lizenzangebots.",
+  p4_fname:'Vorname <span class="req">*</span>',
+  p4_lname:'Nachname <span class="req">*</span>',
+  p4_company:'Firma / Organisation <span class="req">*</span>',
+  p4_address:'Straße und Hausnummer <span class="req">*</span>',
+  p4_postal:'PLZ <span class="req">*</span>',
+  p4_city:'Stadt <span class="req">*</span>',
+  p4_country:'Land <span class="req">*</span>',
+  p4_email:'Geschäftliche E-Mail <span class="req">*</span>',
+  p4_phone:'Telefon <span class="req">*</span>',
+  p4_vat:'USt-IdNr. <span class="req">*</span>',
+  p4_vat_hint:"Ihre EU-Umsatzsteuer-Identifikationsnummer (z.B. DE123456789). <strong>Wichtig:</strong> Wenn Ihr Unternehmen außerhalb Zyperns ansässig ist und Sie eine gültige EU-USt-IdNr. angeben, erhalten Sie ein mehrwertsteuerfreies Angebot (Reverse-Charge-Verfahren). Unternehmen in Zypern erhalten ein Angebot inkl. 19% MwSt.",
+  p4_offer_lang_note:"Ihr Angebot wird auf <strong>Deutsch</strong> erstellt, basierend auf Ihrer Sprachauswahl oben.",
+  p4_message:"Zusätzliche Anmerkungen oder Fragen (optional)",
+  to_summary:"Zusammenfassung prüfen →",
+  p5_title:"Konfiguration überprüfen",
+  p5_sub:"Bitte überprüfen Sie alle Angaben vor dem Absenden.",
+  submit:"Anfrage absenden",
+  back_edit:"← Zurück zur Bearbeitung",
+  p6_title:"Anfrage gesendet!",
+  p6_sub:"Vielen Dank! Wir prüfen Ihre Anforderungen und senden Ihnen innerhalb von 24 Stunden ein individuelles Lizenzangebot.",
+  p6_ref:"Speichern Sie diese Referenz-ID für Ihre Unterlagen.",
+  s_servers:"Server & Kerne",s_version:"Server Version",
+  s_edition:"Server Edition",s_users:"Benutzer mit Serverzugriff",s_devices:"Gemeinsame Geräte mit Serverzugriff",
+  s_rdp:"Remote Desktop (RDS)",s_rds:"RDS Benutzer",s_sql:"SQL Server",
+  s_sqlEd:"SQL Edition",s_sqlVer:"SQL Version",s_sqlCores:"SQL Server Cores",s_sqlU:"SQL Benutzer-CALs",
+  s_sqlD:"SQL Geräte-CALs",s_fname:"Vorname",s_lname:"Nachname",
+  s_company:"Firma",s_address:"Adresse",s_postal:"PLZ",s_city:"Stadt",
+  s_country:"Land",s_email:"E-Mail",s_phone:"Telefon",s_vat:"USt-IdNr.",s_msg:"Anmerkungen",
+  err_required:"Bitte füllen Sie alle Pflichtfelder aus.",
+  err_email:"Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+  err_submit:"Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie uns unter support@softano.eu.",
+  submitting:"Wird gesendet...",
+footer_contact:"Kontakt",
+footer_legal:"Rechtliches"
+},
+el:{
+  partner:"Επίσημος Συνεργάτης Microsoft",
+  title:"Softano.eu - Διαμορφωτής Αδειών Server",
+  subtitle:"Πείτε μας τις απαιτήσεις σας σε server και θα ετοιμάσουμε μια εξατομικευμένη προσφορά αδειοδότησης — δωρεάν.",
+  step1:"1. Server",step2:"2. Πρόσβαση",step3:"3. SQL",step4:"4. Στοιχεία",step5:"5. Σύνοψη",
+  p1_title:"Υποδομή Server",
+  p1_sub:"Περιγράψτε μας το τρέχον ή σχεδιαζόμενο φυσικό περιβάλλον server σας.",
+  p1_servers_label:'Οι φυσικοί servers σας <span class="req">*</span>',
+  p1_servers_sub:"Προσθέστε κάθε φυσικό server και εισάγετε τον συνολικό αριθμό CPU cores.",
+  p1_add_server:"+ Προσθήκη server",
+  p1_server_label:"Server",
+  p1_cores_placeholder:"Cores",
+  p1_cores_hint:"Εισάγετε τα φυσικά CPU cores ανά server. <strong>Αδειοδότηση Microsoft:</strong> Ελάχ. 16 cores ανά server (8 ανά CPU), σε πακέτα 2 cores.",
+  select_ph:"— Επιλέξτε —",
+  p1_cores_ranges:"Τυπικά εύρη: Μικροί servers 4–16 cores · Μεσαίοι 16–64 cores · Enterprise 64–256 cores · High-end/Datacenter 128–512+ cores (multi-CPU).",
+  other:"Άλλο",
+  p1_version:'Έκδοση Windows Server <span class="req">*</span>',
+  latest:"Τελευταία",
+  p1_edition:'Server Edition <span class="req">*</span>',
+  p1_ess_sub:"Μικρή επιχείρηση, χωρίς CALs",
+  p1_std_sub:"Φυσικό + ελαφριά virtualization",
+  p1_dc_sub:"Εντατική virtualization",
+  not_sure:"Δεν είμαι σίγουρος/η",
+  not_sure_edition:"Δεν είμαι σίγουρος/η",
+  ed_ess_info:"Το <strong>Essentials</strong> είναι σχεδιασμένο για μικρές επιχειρήσεις με <strong>μέγ. 10 cores, έως 25 χρήστες και 50 συσκευές</strong>. Τα CALs περιλαμβάνονται ήδη — δεν χρειάζονται επιπλέον άδειες. <strong>Σημείωση:</strong> Το Essentials δεν χρησιμοποιεί αδειοδότηση ανά core όπως το Standard/Datacenter, αλλά είναι μία άδεια server με σταθερά όρια.",
+  ed_std_info:"Το <strong>Standard</strong> αδειοδοτείται ανά core (ελάχιστο 16 cores ανά server, 8 ανά CPU, σε πακέτα 2 cores). Περιλαμβάνει δικαιώματα για <strong>έως 2 εικονικές μηχανές (VMs)</strong>. Για επιπλέον VMs, οι άδειες πρέπει να στοιβάζονται (κάθε στοίβα καλύπτει 2 ακόμα VMs). <strong>Σημαντικό:</strong> Τα CALs (Χρήστη ή Συσκευής) απαιτούνται ξεχωριστά για κάθε χρήστη ή συσκευή που προσπελαύνει τον server.",
+  ed_dc_info:"Το <strong>Datacenter</strong> αδειοδοτείται ανά core (ελάχιστο 16 cores ανά server, 8 ανά CPU, σε πακέτα 2 cores). Επιτρέπει <strong>απεριόριστες εικονικές μηχανές (VMs)</strong> μετά την πλήρη αδειοδότηση όλων των φυσικών cores. <strong>Σημαντικό:</strong> Τα CALs (Χρήστη ή Συσκευής) απαιτούνται ξεχωριστά για κάθε χρήστη ή συσκευή που προσπελαύνει τον server. Ιδανικό για περιβάλλοντα με έντονη virtualization.",
+  ed_unsure_info:"Κανένα πρόβλημα — με βάση τις προδιαγραφές του server σας, τον αριθμό χρηστών και τις ανάγκες virtualization, θα σας προτείνουμε τη σωστή έκδοση στην προσφορά σας.",
+  p1_info:"Δεν είστε σίγουροι για την υποδομή σας; Συμπληρώστε ό,τι γνωρίζετε — θα ελέγξουμε τα πάντα και θα προτείνουμε τη βέλτιστη λύση αδειοδότησης.",
+  next:"Επόμενο →",
+  back:"← Πίσω",
+  p2_title:"Πρόσβαση Χρηστών & Συσκευών",
+  p2_sub:"Πόσοι χρήστες και συσκευές χρειάζονται πρόσβαση στους server σας; Αυτό μας βοηθά να καθορίσουμε τις σωστές άδειες πρόσβασης (CALs).",
+  p2_ess_notice:"Επιλέξατε Essentials — τα CALs περιλαμβάνονται ήδη (έως 25 χρήστες / 50 συσκευές). Μπορείτε να δώσετε τους αριθμούς παρακάτω ώστε να επαληθεύσουμε ότι το Essentials είναι η σωστή επιλογή.",
+  p2_users:'Πόσοι υπάλληλοι/χρήστες προσπελαύνουν τον server; <span class="req">*</span>',
+  p2_users_hint:"Μετρήστε κάθε άτομο που συνδέεται στον server με δικά του στοιχεία — ανεξάρτητα από πόσες συσκευές χρησιμοποιεί.",
+  p2_devices:'Πόσες κοινόχρηστες συσκευές προσπελαύνουν τον server; <span class="req">*</span>',
+  p2_devices_hint:"Κοινόχρηστοι υπολογιστές, σταθμοί εργασίας, ταμεία (POS), kiosks — συσκευές που χρησιμοποιούνται από πολλά άτομα.",
+  p2_cal_explain:"Χρειαζόμαστε και τους δύο αριθμούς για να προτείνουμε αν τα User CALs ή τα Device CALs είναι πιο οικονομικά για εσάς. Παράδειγμα: 20 υπάλληλοι μοιράζονται 5 σταθμούς → τα Device CALs μπορεί να είναι φθηνότερα. 3 υπάλληλοι με 4 συσκευές ο καθένας → τα User CALs μπορεί να είναι φθηνότερα.",
+  p2_rdp:"Χρειάζονται οι χρήστες πρόσβαση Remote Desktop (RDS);",
+  p2_rdp_hint:"Οι Υπηρεσίες Remote Desktop επιτρέπουν στους χρήστες να συνδεθούν στον server εξ αποστάσεως ή από thin clients.",
+  yes:"Ναι",no:"Όχι",not_sure:"Δεν είμαι σίγουρος/η",
+  p2_rds_users:"Πόσοι χρήστες χρειάζονται πρόσβαση Remote Desktop;",
+  p2_rds_hint:"Κάθε απομακρυσμένος χρήστης χρειάζεται ένα επιπλέον RDS CAL πέρα από το κανονικό User/Device CAL.",
+  p3_title:"Βάση Δεδομένων SQL Server",
+  p3_sub:"Χρησιμοποιεί ή σχεδιάζει η επιχείρησή σας να χρησιμοποιήσει βάση δεδομένων Microsoft SQL Server;",
+  p3_need_sql:"Χρειάζεστε SQL Server;",
+  p3_sql_hint:"Ο SQL Server χρησιμοποιείται για ERP (SAP, Dynamics), CRM, data warehouses ή εξειδικευμένες εφαρμογές. <strong>Αδειοδότηση:</strong> Ο SQL Server Standard μπορεί να αδειοδοτηθεί ανά core (ελάχ. 4 cores ανά CPU, πακέτα 2 cores) ή με μοντέλο Server+CAL. Το Enterprise μόνο ανά core. Δεν απαιτούνται CALs με αδειοδότηση ανά core.",
+  p3_sql_edition:"SQL Server Edition",
+  p3_sql_std_sub:"Αδειοδότηση ανά Core ή Server+CAL",
+  p3_sql_ent_sub:"Μόνο αδειοδότηση Core, απεριόριστη RAM",
+  p3_sql_version:"Έκδοση SQL Server",
+  p3_sql_cores:"SQL Server Cores",
+  p3_sql_cores_hint:"Αριθμός φυσικών cores του server στον οποίο θα εκτελείται ο SQL Server. Ελάχιστο 4 cores. Απαιτείται για τον υπολογισμό της βέλτιστης αδειοδότησης.",
+  p3_sql_users:"SQL Server User CALs",
+  p3_sql_users_hint:"Χρήστες που προσπελαύνουν τη βάση SQL (άμεσα ή μέσω εφαρμογής). Μόνο για αδειοδότηση Server+CAL.",
+  p3_sql_devices:"SQL Server Device CALs",
+  p3_sql_devices_hint:"Συσκευές από τις οποίες γίνεται πρόσβαση στη βάση SQL. Μόνο για αδειοδότηση Server+CAL.",
+  p4_title:"Τα Στοιχεία της Επιχείρησής σας",
+  p4_sub:"Θα ετοιμάσουμε και θα στείλουμε μια λεπτομερή προσφορά στο email σας.",
+  p4_biz_notice:"Αυτή η υπηρεσία διαμόρφωσης και προσφοράς απευθύνεται σε επιχειρήσεις και οργανισμούς. Όλα τα πεδία με * είναι υποχρεωτικά για τη δημιουργία της εξατομικευμένης προσφοράς αδειοδότησης.",
+  p4_fname:'Όνομα <span class="req">*</span>',
+  p4_lname:'Επώνυμο <span class="req">*</span>',
+  p4_company:'Εταιρεία / Οργανισμός <span class="req">*</span>',
+  p4_address:'Διεύθυνση <span class="req">*</span>',
+  p4_postal:'Τ.Κ. <span class="req">*</span>',
+  p4_city:'Πόλη <span class="req">*</span>',
+  p4_country:'Χώρα <span class="req">*</span>',
+  p4_email:'Επαγγελματικό Email <span class="req">*</span>',
+  p4_phone:'Τηλέφωνο <span class="req">*</span>',
+  p4_vat:'ΑΦΜ <span class="req">*</span>',
+  p4_vat_hint:"Ο αριθμός ΑΦΜ σας στην ΕΕ (π.χ. EL123456789). <strong>Σημαντικό:</strong> Εάν η επιχείρησή σας βρίσκεται εκτός Κύπρου και παρέχετε έγκυρο ΑΦΜ ΕΕ, η προσφορά σας θα είναι χωρίς ΦΠΑ (αντίστροφη χρέωση). Επιχειρήσεις στην Κύπρο θα λάβουν προσφορά με 19% ΦΠΑ.",
+  p4_offer_lang_note:"Η προσφορά σας θα συνταχθεί στα <strong>Ελληνικά</strong> βάσει της επιλογής γλώσσας σας παραπάνω.",
+  p4_message:"Επιπλέον σημειώσεις ή ερωτήσεις (προαιρετικό)",
+  to_summary:"Έλεγχος Σύνοψης →",
+  p5_title:"Έλεγχος Διαμόρφωσης",
+  p5_sub:"Παρακαλώ ελέγξτε όλα τα στοιχεία πριν την υποβολή.",
+  submit:"Υποβολή Αιτήματος",
+  back_edit:"← Πίσω για επεξεργασία",
+  p6_title:"Το αίτημα υποβλήθηκε!",
+  p6_sub:"Ευχαριστούμε! Θα εξετάσουμε τις απαιτήσεις σας και θα σας στείλουμε εξατομικευμένη προσφορά αδειοδότησης εντός 24 ωρών.",
+  p6_ref:"Αποθηκεύστε αυτό το ID αναφοράς για τα αρχεία σας.",
+  s_servers:"Servers & Cores",s_version:"Έκδοση Server",
+  s_edition:"Server Edition",s_users:"Χρήστες με πρόσβαση στον server",s_devices:"Κοινόχρηστες συσκευές με πρόσβαση",
+  s_rdp:"Remote Desktop (RDS)",s_rds:"Χρήστες RDS",s_sql:"SQL Server",
+  s_sqlEd:"SQL Edition",s_sqlVer:"Έκδοση SQL",s_sqlCores:"SQL Server Cores",s_sqlU:"SQL User CALs",
+  s_sqlD:"SQL Device CALs",s_fname:"Όνομα",s_lname:"Επώνυμο",
+  s_company:"Εταιρεία",s_address:"Διεύθυνση",s_postal:"Τ.Κ.",s_city:"Πόλη",
+  s_country:"Χώρα",s_email:"Email",s_phone:"Τηλέφωνο",s_vat:"ΑΦΜ",s_msg:"Σημειώσεις",
+  err_required:"Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία.",
+  err_email:"Παρακαλώ εισάγετε έγκυρη διεύθυνση email.",
+  err_submit:"Κάτι πήγε στραβά. Παρακαλώ δοκιμάστε ξανά ή επικοινωνήστε μαζί μας στο support@softano.eu.",
+  submitting:"Υποβολή...",
+footer_contact:"Επικοινωνία",
+footer_legal:"Νομικά"
+}
+};
+
+let currentLang="en",currentPage=1;
+const toggleValues={};
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxW_Vk2UUVOvZon5yeyUWJqzeSRhnPV40kiy9DZwgvJ6Zng3qEdrN1rD8z6jmWDEPU/exec";
+
+let serverRowCount=0;
+function addServerRow(cores){
+  const list=document.getElementById("serverList");
+  const id=serverRowCount++;
+  const t=T[currentLang];
+  const div=document.createElement("div");
+  div.className="server-row";
+  div.id="srvRow_"+id;
+  div.innerHTML='<span class="srv-label">'+(t.p1_server_label||"Server")+' '+(id+1)+'</span>'
+    +'<input type="number" min="2" max="1024" placeholder="'+(t.p1_cores_placeholder||"Cores")+'" value="'+(cores||"")+'"/>'
+    +'<span class="srv-unit">Cores</span>'
+    +(id>0?'<button type="button" class="srv-del" onclick="removeServerRow('+id+')">×</button>':'');
+  list.appendChild(div);
+}
+function removeServerRow(id){
+  const el=document.getElementById("srvRow_"+id);
+  if(el)el.remove();
+  renumberServerRows();
+}
+function renumberServerRows(){
+  const t=T[currentLang];
+  document.querySelectorAll("#serverList .server-row").forEach((row,i)=>{
+    row.querySelector(".srv-label").textContent=(t.p1_server_label||"Server")+" "+(i+1);
+  });
+}
+function getServerData(){
+  const servers=[];
+  document.querySelectorAll("#serverList .server-row").forEach(row=>{
+    const cores=parseInt(row.querySelector("input").value)||0;
+    if(cores>0)servers.push(cores);
+  });
+  return servers;
+}
+
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll(".lang-bar button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("lang"+lang.charAt(0).toUpperCase()+lang.slice(1)).classList.add("active");
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const k=el.getAttribute("data-i18n");
+    if(T[lang]&&T[lang][k])el.innerHTML=T[lang][k];
+  });
+  document.documentElement.lang=lang==="el"?"el":lang==="de"?"de":"en";
+  if(currentPage===5)buildSummary();
+  renumberServerRows();
+  // re-show edition info if one is selected
+  if(toggleValues.f_edition) showEditionInfo(toggleValues.f_edition);
+}
+
+function showEditionInfo(val){
+  ["Essentials","Standard","Datacenter","Unsicher"].forEach(v=>{
+    const el=document.getElementById("edInfo_"+v);
+    if(el)el.classList.toggle("show",v===val);
+  });
+  // Show Essentials CAL notice on page 2
+  const notice=document.getElementById("calNotice");
+  if(notice){
+    notice.style.display=val==="Essentials"?"flex":"none";
+    notice.style.background=val==="Essentials"?"var(--teal-bg)":"";
+    notice.style.borderColor=val==="Essentials"?"#b2dfdb":"";
+  }
+}
+
+function goTo(page){
+  if(page>currentPage&&!validatePage(currentPage))return;
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("page"+page).classList.add("active");
+  for(let i=1;i<=5;i++){
+    const sd=document.getElementById("sd"+i);
+    sd.classList.remove("active","done");
+    if(i===page)sd.classList.add("active");
+    else if(i<page)sd.classList.add("done");
+  }
+  currentPage=page;
+  if(page===5)buildSummary();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function validatePage(page){
+  const t=T[currentLang];
+  if(page===1){
+    const servers=getServerData();
+    if(servers.length===0||!toggleValues.f_version||!toggleValues.f_edition){
+      alert(t.err_required);return false;
+    }
+  }
+  if(page===4){
+    const fields=["f_fname","f_lname","f_company","f_address","f_postal","f_city","f_country","f_email","f_phone","f_vat"];
+    for(const id of fields){
+      if(!document.getElementById(id).value.trim()){alert(t.err_required);document.getElementById(id).focus();return false;}
+    }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById("f_email").value.trim())){
+      alert(t.err_email);return false;
+    }
+  }
+  return true;
+}
+
+document.addEventListener("click",function(e){
+  const tc=e.target.closest(".toggle-card");
+  if(tc){
+    const field=tc.getAttribute("data-field");
+    const val=tc.getAttribute("data-val");
+    toggleValues[field]=val;
+    tc.parentElement.querySelectorAll(".toggle-card").forEach(c=>c.classList.remove("selected"));
+    tc.classList.add("selected");
+    if(field==="f_edition")showEditionInfo(val);
+  }
+  const yn=e.target.closest(".yn-btn");
+  if(yn){
+    const field=yn.getAttribute("data-field");
+    const val=yn.getAttribute("data-val");
+    toggleValues[field]=val;
+    yn.parentElement.querySelectorAll(".yn-btn").forEach(b=>b.classList.remove("selected"));
+    yn.classList.add("selected");
+    if(field==="f_rdp")document.getElementById("rdpSection").classList.toggle("show",val==="Ja");
+    if(field==="f_sql")document.getElementById("sqlSection").classList.toggle("show",val==="Ja");
+  }
+});
+
+function buildSummary(){
+  const t=T[currentLang];
+  const v=(id)=>document.getElementById(id).value||"—";
+  const tv=(k)=>toggleValues[k]||"—";
+  // Translate Ja/Nein/Unsicher to current language
+  const trYN={"Ja":t.yes,"Nein":t.no,"Unsicher":t.not_sure};
+  const tvt=(k)=>{const val=toggleValues[k];return trYN[val]||val||"—";};
+  const rows=[];
+  const servers=getServerData();
+  const serverStr=servers.length+" × ("+servers.join(", ")+" Cores)";
+  rows.push([t.s_servers,serverStr]);
+  rows.push([t.s_version,tv("f_version")]);
+  rows.push([t.s_edition,tv("f_edition")]);
+  rows.push(null);
+  rows.push([t.s_users,v("f_users")]);
+  rows.push([t.s_devices,v("f_devices")]);
+  rows.push([t.s_rdp,tvt("f_rdp")]);
+  if(toggleValues.f_rdp==="Ja")rows.push([t.s_rds,v("f_rdsUsers")]);
+  rows.push(null);
+  rows.push([t.s_sql,tvt("f_sql")]);
+  if(toggleValues.f_sql==="Ja"){
+    rows.push([t.s_sqlEd,tv("f_sqlEdition")]);
+    rows.push([t.s_sqlVer,tv("f_sqlVersion")]);
+    rows.push([t.s_sqlCores,v("f_sqlCores")]);
+    rows.push([t.s_sqlU,v("f_sqlUsers")]);
+    rows.push([t.s_sqlD,v("f_sqlDevices")]);
+  }
+  rows.push(null);
+  rows.push([t.s_fname,v("f_fname")]);
+  rows.push([t.s_lname,v("f_lname")]);
+  rows.push([t.s_company,v("f_company")]);
+  rows.push([t.s_address,v("f_address")]);
+  rows.push([t.s_postal+" / "+t.s_city,v("f_postal")+" "+v("f_city")]);
+  rows.push([t.s_country,v("f_country")]);
+  rows.push([t.s_email,v("f_email")]);
+  rows.push([t.s_phone,v("f_phone")]);
+  rows.push([t.s_vat,v("f_vat")]);
+  const msg=document.getElementById("f_message").value.trim();
+  if(msg)rows.push([t.s_msg,msg]);
+
+  document.getElementById("summaryTable").innerHTML=rows.map(r=>{
+    if(!r)return'<tr class="summary-divider"><td colspan="2"></td></tr>';
+    return"<tr><td>"+r[0]+"</td><td>"+r[1]+"</td></tr>";
+  }).join("");
+}
+
+async function submitForm(){
+  const btn=document.getElementById("btnSubmit");
+  const errEl=document.getElementById("submitError");
+  errEl.style.display="none";
+  const payload={
+    firstName:document.getElementById("f_fname").value.trim(),
+    lastName:document.getElementById("f_lname").value.trim(),
+    name:document.getElementById("f_fname").value.trim()+" "+document.getElementById("f_lname").value.trim(),
+    company:document.getElementById("f_company").value.trim(),
+    address:document.getElementById("f_address").value.trim(),
+    postal:document.getElementById("f_postal").value.trim(),
+    city:document.getElementById("f_city").value.trim(),
+    country:document.getElementById("f_country").value.trim(),
+    email:document.getElementById("f_email").value.trim(),
+    phone:document.getElementById("f_phone").value.trim(),
+    vat:document.getElementById("f_vat").value.trim(),
+    servers:String(getServerData().length),
+    coresPerServer:getServerData().join(", "),
+    serverEdition:toggleValues.f_edition||"",
+    serverVersion:toggleValues.f_version||"",
+    users:document.getElementById("f_users").value,
+    devices:document.getElementById("f_devices").value,
+    remoteDesktop:toggleValues.f_rdp||"Nein",
+    rdsUsers:document.getElementById("f_rdsUsers").value,
+    sqlServer:toggleValues.f_sql||"Nein",
+    sqlEdition:toggleValues.f_sqlEdition||"",
+    sqlVersion:toggleValues.f_sqlVersion||"",
+    sqlCores:document.getElementById("f_sqlCores").value,
+    sqlUsers:document.getElementById("f_sqlUsers").value,
+    sqlDevices:document.getElementById("f_sqlDevices").value,
+    message:document.getElementById("f_message").value.trim(),
+    language:currentLang
+  };
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>'+T[currentLang].submitting;
+  try{
+    await fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)});
+    await new Promise(r=>setTimeout(r,2000));
+    const tempId="SRV-"+new Date().toISOString().slice(0,10).replace(/-/g,"")+"-"+Math.random().toString(36).substring(2,6).toUpperCase();
+    document.getElementById("showReqId").textContent=tempId;
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("page6").classList.add("active");
+    for(let i=1;i<=5;i++)document.getElementById("sd"+i).classList.add("done");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(e){
+    errEl.textContent=T[currentLang].err_submit;
+    errEl.style.display="block";
+    btn.disabled=false;
+    btn.textContent=T[currentLang].submit;
+  }
+}
+
+addServerRow();
+const urlParams=new URLSearchParams(window.location.search);
+const isEmbed=urlParams.get("embed")==="1";
+const urlLang=urlParams.get("lang");
+
+// Embed mode: hide footer, lang bar, transparent bg
+if(isEmbed){
+  document.body.classList.add("embed-mode");
+  // Auto-detect language from parent URL via referrer
+  var ref=document.referrer||"";
+  if(!urlLang){
+    if(ref.indexOf("/de/")>-1)setLang("de");
+    else if(ref.indexOf("/el/")>-1)setLang("el");
+    else setLang("en");
+  }else if(T[urlLang])setLang(urlLang);
+  else setLang("en");
+  // Auto-resize iframe: send height to parent
+  function sendHeight(){try{window.parent.postMessage({type:"softano-height",height:document.body.scrollHeight+20},"*");}catch(e){}}
+  sendHeight();
+  setInterval(sendHeight,500);
+  new MutationObserver(sendHeight).observe(document.body,{childList:true,subtree:true,attributes:true});
+}else{
+  if(urlLang&&T[urlLang])setLang(urlLang);else setLang("en");
+}
+</script>
+</body>
+</html>
